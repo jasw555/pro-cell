@@ -1,0 +1,52 @@
+{
+  "$comp": "Fragment",
+  "children": [
+    {
+      "$comp": "Select",
+      "name": "country",
+      "props": {
+        "label": "国家",
+        "options": [
+          { "label": "中国", "value": "CN" },
+          { "label": "美国", "value": "US" }
+        ]
+      }
+    },
+    {
+      "$comp": "Select",
+      "name": "province",
+      "props": {
+        "label": "省份",
+        "options": [
+          { "label": "浙江", "value": "zj" },
+          { "label": "广东", "value": "gd" }
+        ]
+      },
+      "reactions": [
+        {
+          "when": "{{$deps.country === 'CN'}}",
+          "then": { "setVisible": true },
+          "else": { "setVisible": false, "setValue": null }
+        }
+      ]
+    },
+    {
+      "$comp": "Select",
+      "name": "city",
+      "props": {
+        "label": "城市",
+        "options": [
+          { "label": "杭州", "value": "hangzhou" },
+          { "label": "宁波", "value": "ningbo" }
+        ]
+      },
+      "reactions": [
+        {
+          "when": "{{$deps.province === 'zj'}}",
+          "then": { "setVisible": true },
+          "else": { "setVisible": false, "setValue": null }
+        }
+      ]
+    }
+  ]
+}

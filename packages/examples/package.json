@@ -1,0 +1,22 @@
+{
+  "name": "@jasw/pro-cell-examples",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "vite build",
+    "dev": "vite",
+    "lint": "eslint .",
+    "test": "vitest run --passWithNoTests",
+    "test:coverage": "vitest run --passWithNoTests",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@ant-design/v5-patch-for-react-19": "^1.0.0",
+    "@jasw/pro-cell": "workspace:*",
+    "antd": "^5.29.2",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0",
+    "zustand": "^5.0.0"
+  }
+}

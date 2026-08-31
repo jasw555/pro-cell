@@ -1,0 +1,18 @@
+{
+  "extends": "../../tsconfig.base.json",
+  "compilerOptions": {
+    "rootDir": "../..",
+    "outDir": "dist",
+    "baseUrl": ".",
+    "paths": {
+      "@jasw/pro-cell-shared": ["../shared/src/index.ts"],
+      "@jasw/pro-cell-core": ["../core/src/index.ts"]
+    },
+    "jsx": "react-jsx",
+    "declaration": true,
+    "declarationMap": true,
+    "emitDeclarationOnly": false,
+    "noEmit": true
+  },
+  "include": ["src"]
+}

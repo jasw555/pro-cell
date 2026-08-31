@@ -1,0 +1,88 @@
+{
+  "name": "@jasw/pro-cell",
+  "version": "0.1.0",
+  "author": {
+    "name": "jasw",
+    "url": "https://github.com/jasw555"
+  },
+  "license": "MIT",
+  "description": "Schema-driven form and table renderer for React 19 and Ant Design 5",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/jasw555/pro-cell.git",
+    "directory": "packages/pro-cell"
+  },
+  "homepage": "https://github.com/jasw555/pro-cell#readme",
+  "bugs": {
+    "url": "https://github.com/jasw555/pro-cell/issues"
+  },
+  "keywords": [
+    "react",
+    "react-19",
+    "antd",
+    "form",
+    "table",
+    "json-schema",
+    "schema-driven",
+    "zustand"
+  ],
+  "type": "module",
+  "private": false,
+  "engines": {
+    "node": ">=20.0.0"
+  },
+  "files": [
+    "dist",
+    "README.md",
+    "CHANGELOG.md",
+    "LICENSE"
+  ],
+  "publishConfig": {
+    "access": "public"
+  },
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "require": "./dist/index.cjs"
+    },
+    "./core": {
+      "types": "./dist/core.d.ts",
+      "import": "./dist/core.js",
+      "require": "./dist/core.cjs"
+    },
+    "./react": {
+      "types": "./dist/react.d.ts",
+      "import": "./dist/react.js",
+      "require": "./dist/react.cjs"
+    },
+    "./shared": {
+      "types": "./dist/shared.d.ts",
+      "import": "./dist/shared.js",
+      "require": "./dist/shared.cjs"
+    }
+  },
+  "peerDependencies": {
+    "antd": "^5.0.0",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0",
+    "zustand": "^5.0.0"
+  },
+  "scripts": {
+    "build": "vite build",
+    "lint": "eslint .",
+    "prepack": "pnpm --workspace-root turbo run build --filter=@jasw/pro-cell...",
+    "prepublishOnly": "pnpm --workspace-root check",
+    "test": "vitest run --passWithNoTests",
+    "test:coverage": "vitest run --passWithNoTests --coverage",
+    "typecheck": "tsc --noEmit"
+  },
+  "devDependencies": {
+    "@jasw/pro-cell-core": "workspace:*",
+    "@jasw/pro-cell-react": "workspace:*",
+    "@jasw/pro-cell-shared": "workspace:*"
+  }
+}

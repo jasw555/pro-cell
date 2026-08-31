@@ -1,0 +1,83 @@
+name: CI
+
+on:
+  push:
+    branches: [main, master]
+  pull_request:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  quality:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 11.18.0
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Check formatting
+        run: pnpm format:check
+
+      - name: Lint
+        run: pnpm lint
+
+      - name: Typecheck
+        run: pnpm typecheck
+
+      - name: Test with coverage
+        run: pnpm test:coverage
+
+      - name: Build
+        run: pnpm build
+
+      - name: Build publishable tarball
+        run: pnpm --filter @jasw/pro-cell pack --pack-destination "$RUNNER_TEMP"
+
+      - name: Verify tarball as an external consumer
+        shell: bash
+        run: |
+          set -euo pipefail
+          tarball_path="$(find "$RUNNER_TEMP" -maxdepth 1 -name 'jasw-pro-cell-*.tgz' -print -quit)"
+          test -n "$tarball_path"
+
+          consumer_dir="$RUNNER_TEMP/pro-cell-consumer"
+          mkdir -p "$consumer_dir"
+          cd "$consumer_dir"
+          npm init --yes >/dev/null
+          npm install --ignore-scripts --loglevel=error \
+            "$tarball_path" \
+            react@^19 react-dom@^19 antd@^5 zustand@^5 \
+            typescript@^5.7 @types/react@^19 @types/react-dom@^19
+
+          node --input-type=module -e "await Promise.all(['@jasw/pro-cell', '@jasw/pro-cell/core', '@jasw/pro-cell/react', '@jasw/pro-cell/shared'].map((id) => import(id)))"
+          node -e "for (const id of ['@jasw/pro-cell', '@jasw/pro-cell/core', '@jasw/pro-cell/react', '@jasw/pro-cell/shared']) require(id)"
+
+          cp "$GITHUB_WORKSPACE/.github/fixtures/public-api.ts" .
+          ./node_modules/.bin/tsc public-api.ts \
+            --noEmit --strict --target ES2022 --module NodeNext --moduleResolution NodeNext
+
+          if grep -R -E '@jasw/pro-cell-(core|react|shared)|workspace:' \
+            node_modules/@jasw/pro-cell/dist; then
+            echo '发布产物仍引用内部 workspace 包' >&2
+            exit 1
+          fi
+
+          node --input-type=commonjs -e "const manifest = require('./node_modules/@jasw/pro-cell/package.json'); const dependencies = { ...(manifest.dependencies ?? {}), ...(manifest.optionalDependencies ?? {}) }; for (const [name, version] of Object.entries(dependencies)) { if (name.startsWith('@jasw/pro-cell-') || String(version).startsWith('workspace:')) throw new Error('非法运行时依赖：' + name + '@' + version); }"

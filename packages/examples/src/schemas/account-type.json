@@ -1,0 +1,40 @@
+{
+  "$comp": "Fragment",
+  "children": [
+    {
+      "$comp": "Select",
+      "name": "accountType",
+      "props": {
+        "label": "账户类型",
+        "options": [
+          { "label": "个人", "value": "personal" },
+          { "label": "企业", "value": "business" }
+        ]
+      }
+    },
+    {
+      "$comp": "Input",
+      "name": "companyName",
+      "props": { "label": "企业名称" },
+      "reactions": [
+        {
+          "when": "{{$deps.accountType === 'business'}}",
+          "then": { "setVisible": true, "setDisabled": false },
+          "else": { "setVisible": false, "setDisabled": true, "setValue": "" }
+        }
+      ]
+    },
+    {
+      "$comp": "Input",
+      "name": "taxNumber",
+      "props": { "label": "统一社会信用代码" },
+      "reactions": [
+        {
+          "when": "{{$deps.accountType === 'business'}}",
+          "then": { "setVisible": true, "setDisabled": false },
+          "else": { "setVisible": false, "setDisabled": true, "setValue": "" }
+        }
+      ]
+    }
+  ]
+}

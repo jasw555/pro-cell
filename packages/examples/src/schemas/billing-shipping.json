@@ -1,0 +1,46 @@
+{
+  "$comp": "Fragment",
+  "children": [
+    {
+      "$comp": "Input",
+      "name": "billingAddress",
+      "props": { "label": "账单地址" },
+      "rules": [{ "type": "required", "message": "请填写账单地址" }]
+    },
+    {
+      "$comp": "Switch",
+      "name": "sameAs",
+      "props": { "label": "收货地址同账单地址" }
+    },
+    {
+      "$comp": "Input",
+      "name": "shippingAddress",
+      "props": { "label": "收货地址" },
+      "reactions": [
+        {
+          "when": "{{$deps.sameAs === true}}",
+          "then": {
+            "setVisible": false,
+            "setValue": "{{$deps.billingAddress}}"
+          },
+          "else": { "setVisible": true }
+        }
+      ]
+    },
+    {
+      "$comp": "Table",
+      "props": {
+        "rowKey": "id",
+        "pagination": false,
+        "columns": [
+          { "title": "地址类型", "dataIndex": "type" },
+          { "title": "地址", "dataIndex": "address" }
+        ],
+        "dataSource": [
+          { "id": "billing", "type": "账单", "address": "请查看上方账单地址字段" },
+          { "id": "shipping", "type": "收货", "address": "请查看上方收货地址字段" }
+        ]
+      }
+    }
+  ]
+}
