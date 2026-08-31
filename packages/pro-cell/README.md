@@ -427,12 +427,7 @@ if (result.cancelled) {
 
 ## 示例应用
 
-仓库 `packages/examples` 是可运行的 Vite 应用：
-
-```bash
-pnpm install
-pnpm --filter @jasw/pro-cell-examples dev
-```
+完整的 Vite 示例位于 [packages/examples](https://github.com/jasw555/pro-cell/tree/main/packages/examples)。
 
 包含三个 JSON 场景：
 
@@ -440,41 +435,7 @@ pnpm --filter @jasw/pro-cell-examples dev
 2. `account-type.json`：账户类型驱动企业字段可见、禁用和默认值；
 3. `billing-shipping.json`：`sameAs` 驱动收货地址，并演示 `setValue` 与只读 Table。
 
-## 从源码构建和发布
-
-源码仓库使用 pnpm 11，需要 Node.js 22.13 或更高版本；npm 安装后的库运行时仍支持 Node.js 20+。
-
-在仓库根目录执行：
-
-```bash
-pnpm install --frozen-lockfile
-pnpm check
-pnpm pack:check
-```
-
-Vite 会为单个公开包生成：
-
-```text
-dist/index.{js,cjs,d.ts}
-dist/core.{js,cjs,d.ts}
-dist/react.{js,cjs,d.ts}
-dist/shared.{js,cjs,d.ts}
-```
-
-确认 npm 登录账号为 `jasw` 后发布：
-
-```bash
-pnpm whoami
-pnpm --filter @jasw/pro-cell publish --access public
-```
-
-`packages/pro-cell/package.json` 已配置 `publishConfig.access: "public"`、peer dependencies 和完整 `exports`。`publish` 会先执行完整质量门禁，`prepack` 会重建公开包及其内部依赖；内部 workspace 保持 `private: true`，不会单独发布。
-
-CI 会把实际 tarball 安装到 workspace 外的临时项目，再检查四个入口的 ESM、CommonJS、TypeScript 类型以及私有 workspace 引用，避免只验证源码构建成功却遗漏真实安装问题。
-
-提交时，Husky 的 `pre-commit` 钩子只对暂存文件运行 `lint-staged`（Prettier 和 ESLint），`commit-msg` 钩子运行 commitlint。完整的 lint、typecheck、测试和覆盖率检查仍应通过上面的命令显式执行。
-
-## 源码结构
+## GitHub 源码结构
 
 ```text
 packages/shared  → Result、错误、Schema、校验
@@ -485,6 +446,10 @@ packages/examples → React 19 示例
 ```
 
 核心接口和算法附有 JSDoc，重点说明 DependencyTracker 的拓扑排序、SchemaParser 的 O(N) 规范化，以及异步校验的取消策略。
+
+## 参与开发
+
+源码环境、测试要求和提交规范见 [CONTRIBUTING.md](https://github.com/jasw555/pro-cell/blob/main/CONTRIBUTING.md)。
 
 ## License
 

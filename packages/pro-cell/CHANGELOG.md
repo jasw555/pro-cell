@@ -4,6 +4,10 @@
 
 ## [Unreleased]
 
+### Changed
+
+- npm README 聚焦安装与使用，维护者发布流程移至仓库文档。
+
 ### Fixed
 
 - 修复 npm README 架构图的 Mermaid 标签与换行语法。

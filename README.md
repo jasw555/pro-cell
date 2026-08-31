@@ -699,11 +699,6 @@ packages/
 
 ## 仓库示例
 
-```bash
-pnpm install
-pnpm --filter @jasw/pro-cell-examples dev
-```
-
 示例位于 `packages/examples/src/schemas/`：
 
 1. `country-region.json`：国家 → 省份 → 城市的级联可见性和值清理；
@@ -712,10 +707,13 @@ pnpm --filter @jasw/pro-cell-examples dev
 
 示例的 `src/main.tsx` 已导入 `@ant-design/v5-patch-for-react-19`，可以作为应用入口模板。
 
-## 本地开发与质量门禁
+## 本地开发
+
+源码工具链需要 Node.js 22.13 或更高版本和 pnpm 11；发布后的 `@jasw/pro-cell` 运行时仍支持 Node.js 20+。仓库提供 `.nvmrc` 方便切换版本。
 
 ```bash
-pnpm install
+pnpm install --frozen-lockfile
+pnpm --filter @jasw/pro-cell-examples dev
 pnpm check
 ```
 
@@ -723,52 +721,7 @@ pnpm check
 
 Turbo 会在 workspace 间按依赖顺序运行 `build`、`typecheck`、`lint`、`test` 和 `test:coverage`。`shared`、`core` 与 `react` 的 lines、functions、branches、statements 覆盖率门槛均为 92% 以上；React 包同时有渲染集成测试。
 
-格式化检查：
-
-```bash
-pnpm format:check
-pnpm format
-```
-
-提交前 Husky 的 `pre-commit` 钩子运行 `lint-staged`，`commit-msg` 钩子使用 commitlint 检查 Conventional Commits。GitHub CI 会执行完整质量门禁。提交信息示例：
-
-```text
-feat(core): 支持安全联动表达式
-fix(react): 修复异步校验过期结果
-docs: 补充 React 19 使用示例
-```
-
-## 构建与发布
-
-源码仓库使用 pnpm 11，开发和 CI 需要 Node.js 22.13 或更高版本；发布后的 `@jasw/pro-cell` 运行时仍支持 Node.js 20+。仓库提供 `.nvmrc` 方便切换版本。
-
-根目录 `packages/pro-cell` 使用 Vite library mode 构建四个入口，每个入口同时产出 ESM、CJS 和 TypeScript 声明：
-
-```text
-dist/index.js      dist/index.cjs      dist/index.d.ts
-dist/core.js       dist/core.cjs       dist/core.d.ts
-dist/react.js      dist/react.cjs      dist/react.d.ts
-dist/shared.js     dist/shared.cjs     dist/shared.d.ts
-```
-
-发布前建议执行完整门禁并检查 tarball 内容：
-
-```bash
-pnpm install --frozen-lockfile
-pnpm check
-pnpm pack:check
-```
-
-确认 npm 登录账号是 `jasw` 后发布唯一公开包：
-
-```bash
-pnpm whoami
-pnpm --filter @jasw/pro-cell publish --access public
-```
-
-包的 `publishConfig.access` 已设为 `public`，版本由 `packages/pro-cell/package.json` 统一管理。`publish` 会通过 `prepublishOnly` 再跑一次完整门禁，`prepack` 会重建公开包及其内部依赖。内部 workspace 包保持 `private: true`，不会被单独发布，也不会作为发布产物中的运行时依赖。
-
-GitHub CI 还会把实际 tarball 安装到 workspace 外的临时项目，分别验证根入口及 `/core`、`/react`、`/shared` 的 ESM、CommonJS 和 TypeScript 用法，并检查产物中没有残留私有 workspace 引用。
+提交规范、测试要求和 PR 说明见 [CONTRIBUTING.md](./CONTRIBUTING.md)。维护者的版本发布步骤单独记录在 [RELEASING.md](./RELEASING.md)，不与使用文档混在一起。
 
 ## 许可与变更记录
 

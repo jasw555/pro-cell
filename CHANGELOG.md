@@ -4,6 +4,10 @@
 
 ## [Unreleased]
 
+### Changed
+
+- 精简根 README 和 npm README 的维护者内容，将完整发布流程移至 `RELEASING.md`。
+
 ### Fixed
 
 - CI 与 pnpm 11 的运行时要求统一为 Node.js 22.13，并升级 GitHub Actions 到 Node 24 运行时版本。

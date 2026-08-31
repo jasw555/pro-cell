@@ -65,3 +65,5 @@ Husky 会在提交前运行 lint-staged，提交消息会由 commitlint 校验�
 4. 是否涉及 Schema 协议或错误码兼容性。
 
 GitHub CI 会在 push 和 pull request 时重复执行格式、lint、类型、覆盖率、构建、打包与导入检查。
+
+版本发布由维护者执行，具体步骤见 [RELEASING.md](./RELEASING.md)。
