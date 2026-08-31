@@ -441,6 +441,8 @@ pnpm --filter @jasw/pro-cell-examples dev
 
 ## 从源码构建和发布
 
+源码仓库使用 pnpm 11，需要 Node.js 22.13 或更高版本；npm 安装后的库运行时仍支持 Node.js 20+。
+
 在仓库根目录执行：
 
 ```bash

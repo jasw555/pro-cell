@@ -740,6 +740,8 @@ docs: 补充 React 19 使用示例
 
 ## 构建与发布
 
+源码仓库使用 pnpm 11，开发和 CI 需要 Node.js 22.13 或更高版本；发布后的 `@jasw/pro-cell` 运行时仍支持 Node.js 20+。仓库提供 `.nvmrc` 方便切换版本。
+
 根目录 `packages/pro-cell` 使用 Vite library mode 构建四个入口，每个入口同时产出 ESM、CJS 和 TypeScript 声明：
 
 ```text

@@ -4,6 +4,10 @@
 
 ## [Unreleased]
 
+### Fixed
+
+- CI 与 pnpm 11 的运行时要求统一为 Node.js 22.13，并升级 GitHub Actions 到 Node 24 运行时版本。
+
 ## [0.1.0] - 2026-08-31
 
 ### Added
