@@ -68,24 +68,24 @@ TypeScript 类型声明会随四个入口一起发布，编辑器可以直接从
 
 ```mermaid
 flowchart LR
-  App[React 19 应用] -->|JSON Schema / FormApi| Public[@jasw/pro-cell\n唯一 npm 包]
-  Public --> Shared[shared\nResult · Schema · 校验]
-  Public --> Core[core\nSchemaParser · DSL · DependencyTracker]
-  Public --> ReactLayer[react\nZustand FormApi · Renderer]
+  App["React 19 应用"] -->|"JSON Schema / FormApi"| Public["@jasw/pro-cell<br/>唯一 npm 包"]
+  Public --> Shared["shared<br/>Result · Schema · 校验"]
+  Public --> Core["core<br/>SchemaParser · DSL · DependencyTracker"]
+  Public --> ReactLayer["react<br/>Zustand FormApi · Renderer"]
   Shared --> Core
   Core --> ReactLayer
-  ReactLayer --> Antd[antd 5\nForm.Item · Input · Select · Switch · Table]
-  ReactLayer --> Store[(vanilla Zustand store)]
-  Core -->|setVisible / setDisabled / setValue| Store
-  Store -->|快照订阅| ReactLayer
-  Validator[远程校验器] -->|AbortSignal| Shared
-  App -->|子路径导入\n/core / /react / /shared| Public
+  ReactLayer --> Antd["antd 5<br/>Form.Item · Input · Select · Switch · Table"]
+  ReactLayer --> Store["vanilla Zustand store"]
+  Core -->|"setVisible / setDisabled / setValue"| Store
+  Store -->|"快照订阅"| ReactLayer
+  Validator["远程校验器"] -->|"AbortSignal"| Shared
+  App -->|"子路径导入：/core · /react · /shared"| Public
 
-  subgraph Workspace[仓库内部 workspace（均 private）]
+  subgraph Workspace["仓库内部 workspace（均 private）"]
     Shared
     Core
     ReactLayer
-    Examples[examples\nVite 示例应用]
+    Examples["examples<br/>Vite 示例应用"]
   end
 ```
 

@@ -7,6 +7,7 @@
 ### Fixed
 
 - CI 与 pnpm 11 的运行时要求统一为 Node.js 22.13，并升级 GitHub Actions 到 Node 24 运行时版本。
+- 修复 README 架构图中未加引号的特殊字符和不兼容换行，确保 GitHub Mermaid 可以正常渲染。
 
 ## [0.1.0] - 2026-08-31
 

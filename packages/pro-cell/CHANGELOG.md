@@ -4,6 +4,10 @@
 
 ## [Unreleased]
 
+### Fixed
+
+- 修复 npm README 架构图的 Mermaid 标签与换行语法。
+
 ## [0.1.0] - 2026-08-31
 
 ### Added

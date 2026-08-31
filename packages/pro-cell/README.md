@@ -70,17 +70,17 @@ const { DependencyTracker } = require('@jasw/pro-cell/core');
 
 ```mermaid
 flowchart LR
-  Config[JSON Schema\n$comp / children / reactions / rules] --> Parser[SchemaParser\nWeakMap AST 缓存]
-  Parser --> Tracker[DependencyTracker\n拓扑排序 + 串行事务]
-  Tracker --> Form[FormApi\nvanilla Zustand]
-  Form --> Renderer[SchemaRenderer / SchemaForm\nReact 19]
-  Renderer --> Antd[antd 5\nForm.Item 与内置组件]
-  Form --> Validation[校验引擎\nrequired / maxLength / pattern / custom]
-  Validation -->|AbortSignal| Remote[异步校验器 / fetch]
-  Registry[ComponentRegistry\n内置 + 自定义适配器] --> Parser
+  Config["JSON Schema<br/>$comp · children · reactions · rules"] --> Parser["SchemaParser<br/>WeakMap AST 缓存"]
+  Parser --> Tracker["DependencyTracker<br/>拓扑排序 + 串行事务"]
+  Tracker --> Form["FormApi<br/>vanilla Zustand"]
+  Form --> Renderer["SchemaRenderer / SchemaForm<br/>React 19"]
+  Renderer --> Antd["antd 5<br/>Form.Item 与内置组件"]
+  Form --> Validation["校验引擎<br/>required · maxLength · pattern · custom"]
+  Validation -->|"AbortSignal"| Remote["异步校验器 / fetch"]
+  Registry["ComponentRegistry<br/>内置 + 自定义适配器"] --> Parser
   Registry --> Renderer
 
-  subgraph Package[@jasw/pro-cell（单一 npm 包）]
+  subgraph Package["@jasw/pro-cell（单一 npm 包）"]
     Parser
     Tracker
     Form
@@ -89,7 +89,8 @@ flowchart LR
     Registry
   end
 
-  Import[应用导入\n根入口或 /core / /react / /shared] --> Package
+  Import["应用导入<br/>根入口或 /core · /react · /shared"] --> Parser
+  Import --> Renderer
 ```
 
 ## React 快速开始
