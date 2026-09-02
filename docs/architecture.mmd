@@ -1,0 +1,32 @@
+%% Pro Cell 运行时数据流与发布边界。修改后请重新生成 architecture.svg。
+flowchart TB
+  App["React 19 应用"] -->|"JSON Schema / FormApi<br/>根入口或 /core · /react · /shared"| Public["@jasw/pro-cell<br/>唯一 npm 包"]
+  Public --> Shared["shared<br/>Result · Schema · 校验"]
+  Public --> Core["core<br/>SchemaParser · DSL · DependencyTracker"]
+  Public --> ReactLayer["react<br/>Zustand FormApi · Renderer"]
+  Shared --> Core
+  Core --> ReactLayer
+  ReactLayer --> Antd["antd 5<br/>Form.Item · Input · Select · Switch · Table"]
+  ReactLayer --> Store["vanilla Zustand store"]
+  Core -->|"setVisible / setDisabled / setValue"| Store
+  Store -->|"快照订阅"| ReactLayer
+  Validator["远程校验器"] -->|"AbortSignal"| Shared
+
+  subgraph Workspace["仓库内部 workspace（均 private）"]
+    direction LR
+    Shared
+    Core
+    ReactLayer
+    Examples["examples<br/>Vite 示例应用"]
+    Examples -.-> ReactLayer
+  end
+
+  classDef app fill:#eff6ff,stroke:#2563eb,color:#172554,stroke-width:1.5px
+  classDef package fill:#f5f3ff,stroke:#7c3aed,color:#2e1065,stroke-width:1.5px
+  classDef internal fill:#f8fafc,stroke:#64748b,color:#0f172a
+  classDef external fill:#f0fdf4,stroke:#16a34a,color:#14532d
+
+  class App app
+  class Public package
+  class Shared,Core,ReactLayer,Store,Examples internal
+  class Antd,Validator external

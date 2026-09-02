@@ -66,28 +66,9 @@ TypeScript 类型声明会随四个入口一起发布，编辑器可以直接从
 
 下面的图同时展示运行时数据流和发布边界：`shared`、`core`、`react` 只是私有 workspace，最终会被聚合到唯一公开包 `@jasw/pro-cell`；应用只需要安装这一个包及其 peer dependencies。
 
-```mermaid
-flowchart LR
-  App["React 19 应用"] -->|"JSON Schema / FormApi"| Public["@jasw/pro-cell<br/>唯一 npm 包"]
-  Public --> Shared["shared<br/>Result · Schema · 校验"]
-  Public --> Core["core<br/>SchemaParser · DSL · DependencyTracker"]
-  Public --> ReactLayer["react<br/>Zustand FormApi · Renderer"]
-  Shared --> Core
-  Core --> ReactLayer
-  ReactLayer --> Antd["antd 5<br/>Form.Item · Input · Select · Switch · Table"]
-  ReactLayer --> Store["vanilla Zustand store"]
-  Core -->|"setVisible / setDisabled / setValue"| Store
-  Store -->|"快照订阅"| ReactLayer
-  Validator["远程校验器"] -->|"AbortSignal"| Shared
-  App -->|"子路径导入：/core · /react · /shared"| Public
+![Pro Cell 运行时数据流与发布边界](./docs/architecture.svg)
 
-  subgraph Workspace["仓库内部 workspace（均 private）"]
-    Shared
-    Core
-    ReactLayer
-    Examples["examples<br/>Vite 示例应用"]
-  end
-```
+图中内容由 [Mermaid 源文件](./docs/architecture.mmd) 生成。README 使用静态 SVG，避免阅读页面不支持 Mermaid 时退化为纯文字代码块。
 
 ## 安装
 
@@ -379,6 +360,117 @@ interface SchemaFormProps<TSubmit = unknown> {
 ```
 
 它负责把 Schema 节点转换成 React 树。若没有显式 `form` 且不在 `SchemaForm` 上下文中，会自动创建一个本地表单；需要调用 `validate` 或 `submit` 时，建议显式使用 `useForm` 或 `createForm`。
+
+### 样式与主题定制
+
+Pro Cell 不接管应用的样式方案。字段组件继续使用 antd 的样式和主题上下文，外层页面可以使用普通 CSS、CSS Modules、Tailwind CSS 或其他 React 样式方案。常用入口如下：
+
+| 定制目标               | 推荐方式                                       | 作用范围                       |
+| ---------------------- | ---------------------------------------------- | ------------------------------ |
+| 单个 Input、Select 等  | Schema `props.className` / `props.style`       | 当前字段组件                   |
+| 一组表单的间距和标签   | `SchemaForm` / `SchemaRenderer` 的 `className` | 渲染器根节点下的 antd 组件     |
+| antd 颜色、圆角和尺寸  | antd `ConfigProvider`                          | Provider 内全部 antd 组件      |
+| 卡片、分栏、操作区布局 | `SchemaForm` 的 `children`                     | 调用方提供的 React 布局        |
+| 自有设计系统组件       | `registerComponent`                            | 注册组件内部及其公开的样式属性 |
+
+#### 字段样式与作用域 CSS
+
+`props` 中除协议保留项外的属性会传给实际组件，因此 `className` 和只包含字符串、数字的 React `style` 对象都可以写进 Schema：
+
+```tsx
+import type { ReactElement } from 'react';
+import { ConfigProvider } from 'antd';
+import { SchemaForm, type SchemaNode } from '@jasw/pro-cell';
+import './profile-form.css';
+
+const profileSchema = {
+  $comp: 'Fragment',
+  children: [
+    {
+      $comp: 'Input',
+      name: 'displayName',
+      props: {
+        label: '昵称',
+        placeholder: '请输入昵称',
+        className: 'profile-name-input',
+        style: { width: '100%' },
+      },
+      rules: [{ type: 'required', message: '请输入昵称' }],
+    },
+  ],
+} satisfies SchemaNode;
+
+export function ProfileForm(): ReactElement {
+  return (
+    <ConfigProvider
+      theme={{
+        token: {
+          colorPrimary: '#2563eb',
+          borderRadius: 10,
+          controlHeight: 40,
+        },
+      }}
+    >
+      <SchemaForm schema={profileSchema} className="profile-form" />
+    </ConfigProvider>
+  );
+}
+```
+
+```css
+/* profile-form.css：用渲染器根类名限制覆盖范围，避免影响页面里的其他表单。 */
+.profile-form {
+  max-width: 640px;
+  padding: 24px;
+  background: #fff;
+  border-radius: 12px;
+}
+
+.profile-form .ant-form-item {
+  margin-block-end: 20px;
+}
+
+.profile-form .ant-form-item-label > label {
+  color: #1f2937;
+  font-weight: 600;
+}
+
+.profile-form .profile-name-input {
+  background: #f8fafc;
+}
+```
+
+这里的 `profile-name-input` 和内联 `style` 会传给 Input；`profile-form` 则挂在 `SchemaRenderer` 创建的根 `<div>` 上，适合统一调整 `Form.Item`、标签和控件间距。纯 JSON Schema 中的 `style` 属性名应使用 React 的 camelCase 写法，例如 `marginBottom`，不要写 `margin-bottom`。
+
+#### 自定义布局
+
+传入 `children` 后，`SchemaForm` 只提供 FormContext 和 antd Form 上下文，不会自动重复渲染 Schema。此时可以自由组织卡片、栅格和按钮，并把作用域类名直接传给 `SchemaRenderer`：
+
+```tsx
+<SchemaForm schema={profileSchema} form={form}>
+  <section className="profile-card">
+    <header className="profile-card__header">个人资料</header>
+    <SchemaRenderer schema={profileSchema} form={form} className="profile-form" />
+    <footer className="profile-card__actions">
+      <Button type="primary" onClick={() => void form.submit()}>
+        保存
+      </Button>
+    </footer>
+  </section>
+</SchemaForm>
+```
+
+需要注意：
+
+- `props.label` 会被渲染器取出并交给外层 `Form.Item`；其余 `className`、`style` 等属性传给字段组件。
+- 当前版本没有单独的 `formItemProps`。需要调整 `Form.Item` 样式时，请使用 `SchemaRenderer.className` 配合有作用域的 CSS。
+- `SchemaRenderer` 当前只提供根级 `className`，没有根级 `style`；需要动态容器样式时，请使用自定义 `children` 和包装节点。
+- `SchemaForm` 使用自定义 `children` 时，不会为这些 children 自动添加 `className`；应自行设置布局容器，或把类名传给内部的 `SchemaRenderer`。
+- `$comp: "Fragment"` 不生成 DOM，因此设置在 Fragment `props` 中的 `className` 或 `style` 不会产生包装容器。
+- 注册的自定义组件需要自行消费或向下传递 `className`、`style`、`variant` 等属性，注册表不会替组件补上样式行为。
+- 原始 JSON 无法引用 CSS Modules 生成的哈希类名。需要 CSS Modules 时，可以在 TypeScript 中构造 Schema；也可以给自定义组件传递稳定的 `variant`，由组件内部选择样式。
+- Tailwind 项目如果从接口动态下发完整类名，应把这些类名加入构建工具的扫描范围或 safelist，避免生产构建时被移除。
+- 如果 Schema 来自不受信任的来源，应用应在渲染前对白名单组件及其 `className`、`style` 等属性做业务级校验。
 
 ### `useForm` 与 `useFormContext`
 

@@ -4,6 +4,14 @@
 
 ## [Unreleased]
 
+### Changed
+
+- 补充字段样式、作用域 CSS、antd 主题、自定义布局及样式边界文档。
+
+### Fixed
+
+- 架构图改用仓库内静态 SVG，避免不支持 Mermaid 的 README 页面显示源码。
+
 ## [0.1.0] - 2026-08-31
 
 ### Added
